@@ -47,26 +47,28 @@
 
 (defn pack-to-file
 	[articles]
-	(let [file (java.io.File/createTempFile "zhihugrabber" ".txt")
-		sorted-aritcles (sort-by #(get % "publishedTime") articles)
-		newLatestDate (get (last sorted-aritcles) "publishedTime")]
-		(doall
-			(map #(spit
-				file
-				(format-article %)
-				:append true)
-			sorted-aritcles))
-		[file newLatestDate]))
+  (if (seq articles)
+    (let [file (java.io.File/createTempFile "zhihugrabber" ".txt")
+          sorted-aritcles (sort-by #(get % "publishedTime") articles)
+          newLatestDate (get (last sorted-aritcles) "publishedTime")]
+      (doall
+       (map #(spit
+              file
+              (format-article %)
+              :append true)
+            sorted-aritcles))
+      [file newLatestDate])))
 
 (defn grab-all
-	[{:keys [sources latest] :as config}]
-	(let [available-sources (select-keys latest sources)]
-		(doall
-			(map
-				(fn [[source date]]
-					(vector source
-						((comp pack-to-file grab-one) source date)))
-				available-sources))))
+  [{:keys [sources latest] :as config}]
+  (let [available-sources (select-keys latest sources)]
+    (filter #(not (nil? (second %)))
+            (doall
+             (map
+              (fn [[source date]]
+                (vector source
+                        ((comp pack-to-file grab-one) source date)))
+              available-sources)))))
 
 (def run-time-string
 	(.format (java.text.SimpleDateFormat. "yyyyMMddHHmmss") (java.util.Date.)))
