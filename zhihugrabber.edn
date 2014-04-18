@@ -1,0 +1,16 @@
+{:latest
+ {:xiliutang "2014-04-16T14:08:32+08:00",
+  :bigdata "2014-03-28T21:55:23+08:00"},
+ :sources #{:bigdata :xiliutang},
+ :mail
+ {:send-to "yourkindle@kindle.cn",
+  :send-from "youremail@address.com",
+  :subject "CONVERT",
+  :smtp-server {
+                :host "smtp-mail.outlook.com",
+                :port 587,
+                :tls :yes
+                :user "youraccount@outlook.com",
+                :pass "...."}
+  }
+ }
