@@ -48,7 +48,7 @@
 (defn pack-to-file
 	[articles]
   (if (seq articles)
-    (let [file (java.io.File/createTempFile "zhihugrabber" ".txt")
+    (let [file (java.io.File/createTempFile "zhihugrabber" ".html")
           sorted-aritcles (sort-by #(get % "publishedTime") articles)
           newLatestDate (get (last sorted-aritcles) "publishedTime")]
       (doall
