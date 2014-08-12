@@ -76,7 +76,7 @@
 (defn send-files
 	[files {:keys [mail]}]
 	(doseq [[source file] files]
-		(let [attachment-name (str (name source) run-time-string ".txt")
+		(let [attachment-name (str (name source) run-time-string ".html")
 			  {:keys [smtp-server send-to send-from subject]} mail]
 			(mail/send-message
 				smtp-server
