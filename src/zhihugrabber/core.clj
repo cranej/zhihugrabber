@@ -5,7 +5,9 @@
             [clojure.data.json :as json]
             [clojure.edn :as edn]
             [clojure.pprint :as pp]
-            [postal.core :as mail]))
+            [postal.core :as mail]
+            [hiccup.core :as hi]
+            [hiccup.page :as hip]))
 
 (def base-api-url "http://zhuanlan.zhihu.com/api/columns/%s/posts?limit=100")
 
@@ -29,7 +31,7 @@
       (assoc c :latest latestSyncedDate))))
 
 (defn grab-one
-  "Fetch article collection since lastDate from source"
+  "Fetch article collection form one source since lastDate from source"
   [source lastDate]
   (let [resp (client/get
               (format
@@ -39,34 +41,45 @@
     (filter #(> (compare (get % "publishedTime") lastDate) 0) body)))
 
 (defn- format-article
-  [article]
-  (str "<br/>"
-       "<a name=\"TOC\"/>"
-       "<h1>"
-       (get article "title")
-       "</h1><br/>\n"
-       (get article "content")))
+  [{:strs [title content]}]
+  (hi/html [:br]
+           [:a {:name title}]
+           [:h1 title [:br]]
+           [:p content]))
+
+(defn- build-toc
+  "Build TOC for articles"
+  [articles]
+  (str (hi/html [:a {:name "TOC"}] [:center [:h4 "CONTENTS"]])
+       (apply str
+              (map #(let [{:strs [title]} %]
+                      (hi/html [:a {:href (str "#" title)}
+                                [:b title]]
+                               [:br]))
+                   articles))
+       " <!------------><mbp:pagebreak /><!---------------->"))
 
 (defn pack-to-file
   [articles]
   (if (seq articles)
     (let [file (java.io.File/createTempFile "zhihugrabber" ".html")
-          sorted-aritcles (sort-by #(get % "publishedTime") articles)
-          newLatestDate (get (last sorted-aritcles) "publishedTime")]
+          sorted-articles (sort-by #(get % "publishedTime") articles)
+          newLatestDate (get (last sorted-articles) "publishedTime")]
       (spit file
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
+            (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
 <html>
 <head>
   <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">
 </head>
 <body>"
+                 (build-toc sorted-articles))
             :append true)
       (doall
        (map #(spit
               file
               (format-article %)
               :append true)
-            sorted-aritcles))
+            sorted-articles))
       (spit file "</body></html>" :append true)
       [file newLatestDate])))
 
