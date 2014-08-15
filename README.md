@@ -20,7 +20,7 @@ A Clojure program to grab articles from zhuanlan.zhihu.com and send to your Kind
 ### Configuration
 1. Copy `zhihugrabber.edn` to the same folder of the jar you built.
 2. Modify it as your need.
-  1. `:sources` is a set of column names. For example, if you want to grab from http://zhuanlan.zhihu.com/**xiliutang** , add **:xiliutang** in the `:sources`. 
+  1. `:sources` is a set of column names. For example, if you want to grab from http<nolink>://zhuanlan.zhihu.com/**xiliutang** , add **:xiliutang** in the `:sources`. 
   2. `:latest` is a map of from which datetime to grab each column. Will be updated after every run.
   3. `:mail` is email settings. Please makesure the email address you configured here has been added to your Kindle approved email list.  Will send via local server if `:smtp-server` absents.
 

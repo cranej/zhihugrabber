@@ -1,4 +1,4 @@
-(defproject zhihugrabber "0.1.0-SNAPSHOT"
+(defproject zhihugrabber "0.1.0"
   :description "Grabber articles from zhuanlan.zhihu.com"
   :url "https://github.com/cranej/zhihugrabber/releases"
   :license {:name "Eclipse Public License"
